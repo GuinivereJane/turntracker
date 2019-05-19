@@ -16,15 +16,13 @@
       </v-flex>
       <v-flex sm2 md1>
         <v-card
+          height="8rem"
           ripple
           @click="increment({id:'1', target:'score'})"
-          height="8rem"
           dark
           color="secondary"
         >
-          <v-flex align-self-center flexbox>
-            <p class="text-xs-center display-4 white--text" v-text="game.players['1'].score"></p>
-          </v-flex>
+          <p class="text-xs-center pt-3 display-3 white--text" v-text="game.players['1'].score"></p>
         </v-card>
       </v-flex>
       <v-flex sm2 md1>
@@ -36,7 +34,7 @@
           color="secondary"
         >
           <v-flex align-self-center flexbox>
-            <p class="text-xs-center display-4 white--text" v-text="game.players['2'].score"></p>
+            <p class="text-xs-center pt-3 display-3 white--text" v-text="game.players['2'].score"></p>
           </v-flex>
         </v-card>
       </v-flex>
@@ -57,6 +55,9 @@
 </template>
 
 <style>
+.height-8 {
+  height: 8rem;
+}
 .glow {
   box-shadow: inset 0 0 50px #fff, inset 20px 0 80px #f0f,
     inset -20px 0 80px #0ff, inset 20px 0 300px #f0f, inset -20px 0 300px #0ff,
