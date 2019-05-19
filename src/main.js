@@ -1,10 +1,15 @@
 import Vue from 'vue'
+import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+import store from './store/store'
 import './registerServiceWorker'
 
+require('dotenv').config()
+
 Vue.config.productionTip = false
+
+console.log(`${process.env.BASE_URL}service-worker.js`);
 
 new Vue({
   router,

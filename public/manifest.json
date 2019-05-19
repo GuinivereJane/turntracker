@@ -1,6 +1,6 @@
 {
-  "name": "turntracker",
-  "short_name": "turntracker",
+  "name": "hotelbooking",
+  "short_name": "hotelbooking",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
