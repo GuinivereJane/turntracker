@@ -1,20 +1,45 @@
 <template>
-  <v-container fluid grid-list-sm>
-    <v-layout>
-      <v-flex>
-        <v-card tile dark color="primary">
-          <v-card-text>1</v-card-text>
+  <v-container   grid-list-sm>
+    <v-layout row wrap>
+      <v-flex xs6 sm3 order-sm1>
+          <v-card dark color="primary">
+          <v-card-text class="px-0" >{{playerName(1)}}</v-card-text>
         </v-card>
       </v-flex>
+          <v-flex xs6 sm3 order-sm3 >
+
+      <v-card dark color="primary">
+          <v-card-text class="px-0" >{{playerName(2)}}</v-card-text>
+          </v-card>
+      </v-flex>
+      <v-flex xs6 sm3 order-sm2 >
+
+      <v-card dark color="primary">
+          <v-card-text class="px-0" >CP={{cp(1)}}</v-card-text>
+          </v-card>
+      </v-flex>
+     <v-flex xs6 sm3 order-sm4>
+
+      <v-card dark color="primary">
+          <v-card-text class="px-0" >CP={{cp(2)}}</v-card-text>
+          </v-card>
+      </v-flex>
+    
+  
     </v-layout>
 
     <v-layout justify-space-between v-bind="binding">
-      <v-flex sm4 md3>
+      <v-flex xs12 sm3>
         <v-card v-bind:class="{glow:!isActive}" @click="isActive = !isActive" color="primary">
-          <v-img height="8rem" class="white--text" :src="require('../../assets/sigmar.png')"></v-img>
+          <v-img
+            height="8rem"
+            contain
+            class="white--text"
+            :src="require('../../assets/sigmar.png')"
+          ></v-img>
         </v-card>
       </v-flex>
-      <v-flex sm2 md1>
+      <v-flex xs6 sm3>
         <v-card
           height="8rem"
           ripple
@@ -22,10 +47,12 @@
           dark
           color="secondary"
         >
-          <p class="text-xs-center pt-3 display-3 white--text" v-text="game.players['1'].score"></p>
+          <v-flex align-self-center flexbox>
+            <p class="text-xs-center pt-3 display-3 white--text" v-text="game.players['1'].score"></p>
+          </v-flex>
         </v-card>
       </v-flex>
-      <v-flex sm2 md1>
+      <v-flex xs6 sm3>
         <v-card
           ripple
           @click="increment({id:'2', target:'score'})"
@@ -38,18 +65,36 @@
           </v-flex>
         </v-card>
       </v-flex>
-      <v-flex sm4 md3>
+      <v-flex xs12 sm3>
         <v-card v-bind:class="{glow:isActive}" @click="isActive = !isActive" color="primary">
-          <v-img height="8rem" class="white--text" :src="require('../../assets/chaos.png')"></v-img>
+          <v-img contain height="8rem" class="white--text" :src="require('../../assets/chaos.png')"></v-img>
         </v-card>
       </v-flex>
     </v-layout>
-    <v-layout>
-      <v-flex>
-        <v-card dark color="primary">
-          <v-card-text>5</v-card-text>
-        </v-card>
+      <v-layout row wrap>
+      <v-flex xs12 sm6 order-sm1>
+     <v-layout justify-space-around>
+          <v-flex sm2 v-for="(turn,index) in priority(1)" :key="index">
+            <div v-bind:class="{primary: turn, secondary:!turn, 'secondary--text': !turn} ">
+              {{ turn}}
+            </div>
+          </v-flex>
+        </v-layout>
+         
       </v-flex>
+          <v-flex xs12 sm6 order-sm2 >
+
+     <v-layout justify-space-around row reverse>
+          <v-flex sm2 v-for="(turn,index) in priority(2)" :key="index" >
+            <div v-bind:class="{primary: turn, secondary:!turn, 'secondary--text': !turn} ">
+              {{turn}}
+            </div>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+    
+    
+  
     </v-layout>
   </v-container>
 </template>
@@ -80,7 +125,15 @@ export default class TrackerGrid extends Vue {
   mounted() {
     console.log(this.$vuetify.breakpoint);
   }
-
+  priority(playerNum){
+    return this.game.players[playerNum].priority
+  }
+  cp(playerNum){
+    return this.game.players[playerNum].cp
+  }
+  playerName(playerNum){
+    return this.game.players[playerNum].name
+  }
   random() {
     return `https://robohash.org/${Math.random()
       .toString(36)

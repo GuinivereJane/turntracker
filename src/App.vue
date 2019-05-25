@@ -2,9 +2,6 @@
   <default/>
 </template>
 <style>
-html {
-  overflow-y: hidden;
-}
 </style>
 <script>
 import { Vue, Component, Prop } from 'vue-property-decorator';

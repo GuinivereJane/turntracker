@@ -1,5 +1,5 @@
 <template>
-  <v-app height="100%" id="inspire" dark>
+  <v-app id="inspire" dark>
     <v-navigation-drawer v-model="drawer" clipped fixed app>
       <menu-item-list/>
     </v-navigation-drawer>
@@ -7,14 +7,11 @@
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>Turn Tracker</v-toolbar-title>
     </v-toolbar>
-    <v-content overflow-hidden>
-      <v-container fluid fill-height>
+    <v-content>
+      <v-container fluid>
         <router-view></router-view>
       </v-container>
     </v-content>
-    <v-footer app fixed>
-      <span></span>
-    </v-footer>
   </v-app>
 </template>
 

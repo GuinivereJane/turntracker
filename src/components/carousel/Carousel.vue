@@ -1,11 +1,16 @@
 <template>
-  <v-carousel height="100%" :cycle="false" :hide-delimiters="true">
+  <v-carousel class="carousel" height="100%" :cycle="false" :hide-delimiters="true">
     <v-carousel-item>
       <tracker-grid/>
     </v-carousel-item>
     <v-carousel-item v-for="(item,i) in items" :key="i" :src="item.src"></v-carousel-item>
   </v-carousel>
 </template>
+<style>
+.carousel {
+  max-width: 740px;
+}
+</style>
 
 <script>
 import { Vue, Component, Prop } from 'vue-property-decorator';

@@ -5,10 +5,9 @@ const now = moment().format();
 
 const state = {
   players: {
-    '1': { name: 'player1', turn: 0, score: 0 },
-    '2': { name: 'player2', turn: 0, score: 0 },
+    '1': { name: 'player1', turn: 0, score: 0, priority: false, cp: 0, priority:[0,2,0,0,0] },
+    '2': { name: 'player2', turn: 0, score: 0, priority: false, cp: 0, priority: [1, 0, 0, 0, 0] },
   },
-  priority: [],
   startTime: now,
 };
 
