@@ -1,138 +1,114 @@
 <template>
-  <v-container   grid-list-sm>
-    <v-layout row wrap>
-      <v-flex xs6 sm3 order-sm1>
-          <v-card dark color="primary">
-          <v-card-text class="px-0" >{{playerName(1)}}</v-card-text>
-        </v-card>
+  <v-container grid-list-xs ma-0>
+    <v-layout align-center justify-end row fill-height wrap>
+      <v-flex xs6 sm3 order-sm1 color="primary">
+        <name-box :value="playerName(1)"/>
       </v-flex>
-          <v-flex xs6 sm3 order-sm3 >
-
-      <v-card dark color="primary">
-          <v-card-text class="px-0" >{{playerName(2)}}</v-card-text>
-          </v-card>
+      <v-flex xs6 sm3 order-sm3 color="primary">
+        <name-box :value="playerName(2)"/>
       </v-flex>
-      <v-flex xs6 sm3 order-sm2 >
-
-      <v-card dark color="primary">
-          <v-card-text class="px-0" >CP={{cp(1)}}</v-card-text>
-          </v-card>
+      <v-flex xs6 sm3 order-sm2="primary">
+        <command-box :id="1" :value="cp(1)" v-on:increment="increment" v-on:decrement="decrement"/>
       </v-flex>
-     <v-flex xs6 sm3 order-sm4>
-
-      <v-card dark color="primary">
-          <v-card-text class="px-0" >CP={{cp(2)}}</v-card-text>
-          </v-card>
+      <v-flex xs6 sm3 order-sm4 color="primary">
+        <command-box :id="2" :value="cp(2)" v-on:increment="increment" v-on:decrement="decrement"/>
       </v-flex>
-    
-  
     </v-layout>
-
     <v-layout justify-space-between v-bind="binding">
       <v-flex xs12 sm3>
-        <v-card v-bind:class="{glow:!isActive}" @click="isActive = !isActive" color="primary">
-          <v-img
-            height="8rem"
-            contain
-            class="white--text"
-            :src="require('../../assets/sigmar.png')"
-          ></v-img>
-        </v-card>
+        <priority-box
+          :id="1"
+          v-on:selected="togglePriority"
+          :glow="game.players[1].priority[game.turn-1]"
+          :icon="game.players[1].icon"
+        />
       </v-flex>
       <v-flex xs6 sm3>
-        <v-card
-          height="8rem"
-          ripple
-          @click="increment({id:'1', target:'score'})"
-          dark
-          color="secondary"
-        >
-          <v-flex align-self-center flexbox>
-            <p class="text-xs-center pt-3 display-3 white--text" v-text="game.players['1'].score"></p>
-          </v-flex>
-        </v-card>
+        <score-box :id="1" v-on:increment="increment" v-on:decrement="decrement" :score="score(1)"/>
       </v-flex>
       <v-flex xs6 sm3>
-        <v-card
-          ripple
-          @click="increment({id:'2', target:'score'})"
-          height="8rem"
-          dark
-          color="secondary"
-        >
-          <v-flex align-self-center flexbox>
-            <p class="text-xs-center pt-3 display-3 white--text" v-text="game.players['2'].score"></p>
-          </v-flex>
-        </v-card>
+        <score-box :id="2" v-on:increment="increment" v-on:decrement="decrement" :score="score(2)"/>
       </v-flex>
       <v-flex xs12 sm3>
-        <v-card v-bind:class="{glow:isActive}" @click="isActive = !isActive" color="primary">
-          <v-img contain height="8rem" class="white--text" :src="require('../../assets/chaos.png')"></v-img>
-        </v-card>
+        <priority-box
+          :id="2"
+          v-on:selected="togglePriority"
+          :glow="game.players[2].priority[game.turn-1]"
+          :icon="game.players[2].icon"
+        />
       </v-flex>
     </v-layout>
-      <v-layout row wrap>
+    <v-layout row wrap>
       <v-flex xs12 sm6 order-sm1>
-     <v-layout justify-space-around>
-          <v-flex sm2 v-for="(turn,index) in priority(1)" :key="index">
-            <div v-bind:class="{primary: turn, secondary:!turn, 'secondary--text': !turn} ">
-              {{ turn}}
-            </div>
-          </v-flex>
-        </v-layout>
-         
+        <turn-box
+          :id="1"
+          :turn="turn()"
+          v-on:active="toggleActiveTurn"
+          :priority="game.players[1].priority"
+          :activate="game.players[1].active"
+        />
       </v-flex>
-          <v-flex xs12 sm6 order-sm2 >
-
-     <v-layout justify-space-around row reverse>
-          <v-flex sm2 v-for="(turn,index) in priority(2)" :key="index" >
-            <div v-bind:class="{primary: turn, secondary:!turn, 'secondary--text': !turn} ">
-              {{turn}}
-            </div>
-          </v-flex>
-        </v-layout>
+      <v-flex xs12 sm6 order-sm2>
+        <turn-box
+          :id="2"
+          v-on:active="toggleActiveTurn"
+          :turn="turn()"
+          :priority="game.players[2].priority"
+          :activate="game.players[2].active"
+        />
       </v-flex>
-    
-    
-  
     </v-layout>
   </v-container>
 </template>
 
-<style>
-.height-8 {
-  height: 8rem;
-}
-.glow {
-  box-shadow: inset 0 0 50px #fff, inset 20px 0 80px #f0f,
-    inset -20px 0 80px #0ff, inset 20px 0 300px #f0f, inset -20px 0 300px #0ff,
-    0 0 50px #fff, -10px 0 80px #f0f, 10px 0 80px #0ff;
-}
-</style>
+
 <script>
 import { Vue, Component } from 'vue-property-decorator';
 import { State, Mutation, namespace } from 'vuex-class';
+import TurnBox from './components/TurnBox';
+import CommandBox from './components/CommandBox';
+
+import NameBox from './components/NameBox';
+import ScoreBox from './components/ScoreBox';
+import PriorityBox from './components/PriorityBox';
 
 const game = namespace('game/');
 
-@Component
+@Component({
+  components: { NameBox, TurnBox, CommandBox, ScoreBox, PriorityBox },
+})
 export default class TrackerGrid extends Vue {
   @State game;
   @game.Mutation increment;
+  @game.Mutation decrement;
+  @game.Mutation setPriority;
+  @game.Mutation setActive;
 
-  isActive = true;
+  increment(payload) {
+    this.increment(payload);
+  }
+  decrement(payload) {
+    this.decrement(payload);
+  }
+  score(id) {
+    return this.game.players[id].score;
+  }
 
-  mounted() {
-    console.log(this.$vuetify.breakpoint);
+  turn() {
+    return this.game.turn;
   }
-  priority(playerNum){
-    return this.game.players[playerNum].priority
+  cp(playerNum) {
+    return this.game.players[playerNum].cp;
   }
-  cp(playerNum){
-    return this.game.players[playerNum].cp
+  playerName(playerNum) {
+    return this.game.players[playerNum].name;
   }
-  playerName(playerNum){
-    return this.game.players[playerNum].name
+  togglePriority(payload) {
+    this.setPriority(payload);
+  }
+
+  toggleActiveTurn(payload) {
+    this.setActive(payload);
   }
   random() {
     return `https://robohash.org/${Math.random()

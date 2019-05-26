@@ -13,7 +13,24 @@ module.exports = {
       // swSrc is required in InjectManifest mode.
       swSrc: './src/service-worker.js',
       // ...other Workbox options...
-    }
-  }
-
-}
+    },
+  },
+  chainWebpack: config => {
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .loader('vue-loader')
+      .tap(options =>
+        Object.assign(options, {
+          transformAssetUrls: {
+            'VImg': ['src', 'lazy-src'],
+            'v-card': 'src',
+            'v-card-media': 'src',
+            'v-responsive': 'src',
+            'v-carousel-item': 'src',
+            //...
+          },
+        })
+      );
+  },
+};
