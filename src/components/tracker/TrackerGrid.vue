@@ -17,6 +17,7 @@
     <v-layout justify-space-between v-bind="binding">
       <v-flex xs12 sm3>
         <priority-box
+          :active="inactive()"
           :id="1"
           v-on:selected="togglePriority"
           :glow="game.players[1].priority[game.turn-1]"
@@ -31,6 +32,7 @@
       </v-flex>
       <v-flex xs12 sm3>
         <priority-box
+          :active="inactive()"
           :id="2"
           v-on:selected="togglePriority"
           :glow="game.players[2].priority[game.turn-1]"
@@ -38,25 +40,41 @@
         />
       </v-flex>
     </v-layout>
-    <v-layout row wrap>
-      <v-flex xs12 sm6 order-sm1>
-        <turn-box
-          :id="1"
-          :turn="turn()"
-          v-on:active="toggleActiveTurn"
-          :priority="game.players[1].priority"
-          :activate="game.players[1].active"
+    <v-layout align-center row fill-height wrap>
+      <v-flex secondary height="100%" xs6 sm3 pa-2 order-sm1 text-xs-center>
+        <play-order-box
+          :p1prior="game.players[1].priority[game.turn - 1]"
+          :p2prior="game.players[2].priority[game.turn - 1]"
+          :status="game.players[1].priority[game.turn - 1]"
         />
       </v-flex>
-      <v-flex xs12 sm6 order-sm2>
-        <turn-box
-          :id="2"
-          v-on:active="toggleActiveTurn"
-          :turn="turn()"
-          :priority="game.players[2].priority"
-          :activate="game.players[2].active"
+      <v-flex secondary height="100%" xs6 sm3 pa-2 order-sm3 text-xs-center>
+        <play-order-box
+          :p1prior="game.players[1].priority[game.turn - 1]"
+          :p2prior="game.players[2].priority[game.turn - 1]"
+          :status="game.players[2].priority[game.turn - 1]"
         />
       </v-flex>
+
+      <v-flex secondary height="100%" xs12 sm6 pa-0 order-sm2>
+        <battle-round-box :battleround="game.turn"/>
+      </v-flex>
+    </v-layout>
+    <v-layout align-center justify-space-between row fill-height>
+      <time-buttons
+        :active="game.players[1].active"
+        :id="1"
+        v-on:start-time="time"
+        v-on:pause-time="time"
+        v-on:stop-time="time"
+      />
+      <time-buttons
+        :active="game.players[2].active"
+        :id="2"
+        v-on:start-time="time"
+        v-on:pause-time="time"
+        v-on:stop-time="time"
+      />
     </v-layout>
   </v-container>
 </template>
@@ -65,17 +83,27 @@
 <script>
 import { Vue, Component } from 'vue-property-decorator';
 import { State, Mutation, namespace } from 'vuex-class';
-import TurnBox from './components/TurnBox';
-import CommandBox from './components/CommandBox';
 
+import CommandBox from './components/CommandBox';
 import NameBox from './components/NameBox';
 import ScoreBox from './components/ScoreBox';
 import PriorityBox from './components/PriorityBox';
+import TimeButtons from './components/TimeButtons';
+import PlayOrderBox from './components/PlayOrderBox';
+import BattleRoundBox from './components/BattleRoundBox';
 
 const game = namespace('game/');
 
 @Component({
-  components: { NameBox, TurnBox, CommandBox, ScoreBox, PriorityBox },
+  components: {
+    NameBox,
+    CommandBox,
+    ScoreBox,
+    PriorityBox,
+    TimeButtons,
+    PlayOrderBox,
+    BattleRoundBox,
+  },
 })
 export default class TrackerGrid extends Vue {
   @State game;
@@ -83,6 +111,9 @@ export default class TrackerGrid extends Vue {
   @game.Mutation decrement;
   @game.Mutation setPriority;
   @game.Mutation setActive;
+  @game.Mutation stampTime;
+  @game.Mutation clearActive;
+  @game.Mutation nextTurn;
 
   increment(payload) {
     this.increment(payload);
@@ -93,7 +124,9 @@ export default class TrackerGrid extends Vue {
   score(id) {
     return this.game.players[id].score;
   }
-
+  inactive() {
+    return !this.game.players[1].active && !this.game.players[2].active;
+  }
   turn() {
     return this.game.turn;
   }
@@ -105,10 +138,28 @@ export default class TrackerGrid extends Vue {
   }
   togglePriority(payload) {
     this.setPriority(payload);
+    this.setActive(payload);
   }
 
-  toggleActiveTurn(payload) {
-    this.setActive(payload);
+  time(payload) {
+    if (this.game.turn > 0 && this.game.players[payload.id].active) {
+      this.stampTime(payload);
+
+      if (payload.action === 'stop') {
+        this.clearActive();
+        if (this.game.players[payload.id].priority[this.game.turn - 1]) {
+          if (payload.id === 1) {
+            this.setActive({ id: 2 });
+          }
+          if (payload.id === 2) {
+            this.setActive({ id: 1 });
+          }
+        } else {
+          this.clearActive();
+          this.nextTurn();
+        }
+      }
+    }
   }
   random() {
     return `https://robohash.org/${Math.random()

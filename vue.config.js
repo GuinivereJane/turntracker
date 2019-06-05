@@ -15,6 +15,7 @@ module.exports = {
       // ...other Workbox options...
     },
   },
+  publicPath: process.env.NODE_ENV === 'production' ? '/turntracker/' : '/',
   chainWebpack: config => {
     config.module
       .rule('vue')
@@ -23,7 +24,7 @@ module.exports = {
       .tap(options =>
         Object.assign(options, {
           transformAssetUrls: {
-            'VImg': ['src', 'lazy-src'],
+            VImg: ['src', 'lazy-src'],
             'v-card': 'src',
             'v-card-media': 'src',
             'v-responsive': 'src',

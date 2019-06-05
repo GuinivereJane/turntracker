@@ -1,18 +1,19 @@
-import Vue from 'vue'
-import './plugins/vuetify'
-import App from './App.vue'
-import router from './router'
-import store from './store/store'
-import './registerServiceWorker'
+import Vue from 'vue';
+import './plugins/vuetify';
+import App from './App.vue';
+import router from './router';
+import store from './store/store';
+import './registerServiceWorker';
 
-require('dotenv').config()
+require('dotenv').config();
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 console.log(`${process.env.BASE_URL}service-worker.js`);
+console.log(`${process.env.NODE_ENV}service-worker.js`);
 
 new Vue({
   router,
   store,
-  render: h => h(App)
-}).$mount('#app')
+  render: h => h(App),
+}).$mount('#app');
